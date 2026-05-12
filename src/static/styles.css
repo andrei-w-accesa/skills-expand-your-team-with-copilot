@@ -50,6 +50,17 @@ body {
   font-size: 0.9rem;
 }
 
+body.theme-dark {
+  --background: #0f1115;
+  --surface: #171b25;
+  --text-primary: #e6e8ee;
+  --text-secondary: #b3b8c6;
+  --border: #2b3242;
+  --border-light: #222837;
+  --border-focus: #3a4560;
+  color-scheme: dark;
+}
+
 header {
   text-align: center;
   padding: 12px 0;
@@ -296,6 +307,33 @@ button {
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
+}
+
+.cancel-btn {
+  background-color: var(--border);
+  color: var(--text-primary);
+}
+
+.cancel-btn:hover {
+  background-color: var(--border-focus);
+}
+
+.confirm-btn {
+  background-color: var(--error);
+  color: white;
+}
+
+.confirm-btn:hover {
+  background-color: #b71c1c;
+}
+
+input {
+  background-color: var(--surface);
+  color: var(--text-primary);
+}
+
+input::placeholder {
+  color: var(--text-secondary);
 }
 
 /* Tooltip styles */
@@ -648,6 +686,14 @@ footer {
 
 .icon-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-toggle {
+  padding: 4px 10px;
+}
+
+.theme-toggle #theme-icon {
+  font-size: 1rem;
 }
 
 .user-icon {

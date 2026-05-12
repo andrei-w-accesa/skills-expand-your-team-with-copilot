@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
+  // Theme elements
+  const themeToggleButton = document.getElementById("theme-toggle");
+  const themeIcon = document.getElementById("theme-icon");
+
   // Activity categories with corresponding colors
   const activityTypes = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
@@ -43,6 +47,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Authentication state
   let currentUser = null;
+
+  // Theme state
+  const THEME_STORAGE_KEY = "theme";
+  let hasExplicitThemePreference = false;
+
+  function getSystemTheme() {
+    return window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+
+  function getInitialTheme() {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme === "dark" || savedTheme === "light") {
+      hasExplicitThemePreference = true;
+      return savedTheme;
+    }
+    return getSystemTheme();
+  }
+
+  function applyTheme(theme) {
+    const isDark = theme === "dark";
+    document.body.classList.toggle("theme-dark", isDark);
+
+    if (themeIcon) {
+      themeIcon.textContent = isDark ? "☀️" : "🌙";
+    }
+
+    if (themeToggleButton) {
+      const label = isDark ? "Switch to light mode" : "Switch to dark mode";
+      themeToggleButton.setAttribute("aria-label", label);
+      themeToggleButton.title = label;
+    }
+  }
+
+  function initializeTheme() {
+    applyTheme(getInitialTheme());
+
+    if (themeToggleButton) {
+      themeToggleButton.addEventListener("click", () => {
+        hasExplicitThemePreference = true;
+        const nextTheme = document.body.classList.contains("theme-dark")
+          ? "light"
+          : "dark";
+        localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+        applyTheme(nextTheme);
+      });
+    }
+
+    if (window.matchMedia) {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      const handler = () => {
+        if (!hasExplicitThemePreference) {
+          applyTheme(getSystemTheme());
+        }
+      };
+      if (mq.addEventListener) {
+        mq.addEventListener("change", handler);
+      } else if (mq.addListener) {
+        mq.addListener(handler);
+      }
+    }
+  }
 
   // Time range mappings for the dropdown
   const timeRanges = {
@@ -694,16 +762,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
       document.body.appendChild(confirmDialog);
-
-      // Style the buttons
-      const cancelBtn = confirmDialog.querySelector("#cancel-button");
-      const confirmBtn = confirmDialog.querySelector("#confirm-button");
-
-      cancelBtn.style.backgroundColor = "#f1f1f1";
-      cancelBtn.style.color = "#333";
-
-      confirmBtn.style.backgroundColor = "#dc3545";
-      confirmBtn.style.color = "white";
     }
 
     // Set the message
@@ -863,6 +921,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize app
+  initializeTheme();
   checkAuthentication();
   initializeFilters();
   fetchActivities();
